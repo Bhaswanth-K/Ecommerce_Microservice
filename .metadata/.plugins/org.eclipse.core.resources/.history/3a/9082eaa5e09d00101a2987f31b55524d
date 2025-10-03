@@ -1,0 +1,16 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway  
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Product Microservice
+        url: /product-service/v3/api-docs  
+      - name: Order Microservice
+        url: /order-service/v3/api-docs  
+      - name: User Microservice
+        url: /user-service/v3/api-docs  

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete element from project &apos;api-gateway&apos;&#x0D;&#x0A;- Original project: &apos;api-gateway&apos;&#x0D;&#x0A;- Original element: &apos;com.microservice.api_gateway.config.OpenApiConfig.java&apos;" description="Delete element" element1="/src\/main\/java=/gradle_scope=/main=/=/gradle_used_by_scope=/main,test=/&lt;com.microservice.api_gateway.config{OpenApiConfig.java" elements="1" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1759466178998" subPackages="false" version="1.0"/>
+</session>

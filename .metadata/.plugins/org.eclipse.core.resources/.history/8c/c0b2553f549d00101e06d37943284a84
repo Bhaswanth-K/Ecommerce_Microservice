@@ -1,0 +1,5 @@
+package com.microservice.api_gateway.exception;
+
+public class ApiGateWayFallback {
+
+}

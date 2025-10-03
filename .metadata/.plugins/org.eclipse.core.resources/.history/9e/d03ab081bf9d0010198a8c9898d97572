@@ -1,0 +1,55 @@
+spring.application.name=api-gateway
+server.port=8080
+
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+eureka.client.register-with-eureka=true
+eureka.client.fetch-registry=true
+spring.cloud.gateway.discovery.locator.lower-case-service-id=true
+
+#eureka.instance.hostname=localhost
+eureka.instance.ip-address=${spring.cloud.client.ip-address}
+eureka.instance.prefer-ip-address=true
+eureka.instance.instance-id=localhost:${server.port}
+
+# Gateway Routes (existing + explicit for Swagger)
+spring.cloud.gateway.discovery.locator.enabled=true
+spring.cloud.gateway.routes[0].id=user-service
+spring.cloud.gateway.routes[0].uri=lb://user-service
+spring.cloud.gateway.routes[0].predicates[0]=Path=/users/**,/user-service/**
+
+spring.cloud.gateway.routes[1].id=product-service
+spring.cloud.gateway.routes[1].uri=lb://product-service
+spring.cloud.gateway.routes[1].predicates[0]=Path=/products/**,/product-service/**
+
+spring.cloud.gateway.routes[2].id=order-service
+spring.cloud.gateway.routes[2].uri=lb://order-service
+spring.cloud.gateway.routes[2].predicates[0]=Path=/orders/**,/order-service/**
+
+# Explicit Swagger Routes (NEW: Ensures /v3/api-docs and UI are routed)
+spring.cloud.gateway.routes[3].id=user-swagger
+spring.cloud.gateway.routes[3].uri=lb://user-service
+spring.cloud.gateway.routes[3].predicates[0]=Path=/user-service/v3/api-docs/**,/user-service/swagger-ui/**,/user-service/swagger-ui.html
+
+spring.cloud.gateway.routes[4].id=product-swagger
+spring.cloud.gateway.routes[4].uri=lb://product-service
+spring.cloud.gateway.routes[4].predicates[0]=Path=/product-service/v3/api-docs/**,/product-service/swagger-ui/**,/product-service/swagger-ui.html
+
+spring.cloud.gateway.routes[5].id=order-swagger
+spring.cloud.gateway.routes[5].uri=lb://order-service
+spring.cloud.gateway.routes[5].predicates[0]=Path=/order-service/v3/api-docs/**,/order-service/swagger-ui/**,/order-service/swagger-ui.html
+
+# Global CORS for Swagger UI (NEW: Allows browser to load resources)
+spring.cloud.gateway.globalcors.cors-configurations.[/**].allowedOrigins=*
+spring.cloud.gateway.globalcors.cors-configurations.[/**].allowedMethods=GET,POST,PUT,DELETE,OPTIONS
+spring.cloud.gateway.globalcors.cors-configurations.[/**].allowedHeaders=*
+spring.cloud.gateway.globalcors.cors-configurations.[/**].allowCredentials=true
+
+# Logging (enhanced for debugging routes)
+logging.level.com.microservice=DEBUG
+logging.file.name=api-gateway.log
+logging.level.org.springframework.cloud.gateway=TRACE  # NEW: Trace route matching
+
+# Fallback Route (UPDATED: Align with code's reactive dummy URI; remove http://localhost if no endpoint)
+spring.cloud.gateway.routes[6].id=fallback  # Shifted index due to new routes
+spring.cloud.gateway.routes[6].uri=no://op  # Use dummy to trigger reactive fallback in code
+spring.cloud.gateway.routes[6].predicates[0]=Path=/fallback

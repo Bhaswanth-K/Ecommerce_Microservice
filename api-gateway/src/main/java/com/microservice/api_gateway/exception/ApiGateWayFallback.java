@@ -9,6 +9,6 @@ public class ApiGateWayFallback {
 
     @GetMapping("/fallback")
     public ResponseEntity<String> fallback() {
-        return ResponseEntity.status(503).body("Service Unavailable,Bhaswanth Working on the issue - Please try again later.");
+       return ResponseEntity.status(503).body("Service Unavailable Bhaswanth Working on itt, Please try again later.");
     }
 }

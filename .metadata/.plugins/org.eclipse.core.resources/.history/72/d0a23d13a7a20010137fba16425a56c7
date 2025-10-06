@@ -1,0 +1,96 @@
+package com.microservice.order_service;
+
+import com.microservice.order_service.client.ProductClient;
+import com.microservice.order_service.client.UserClient;
+import com.microservice.order_service.common.ProductModel;
+import com.microservice.order_service.common.UserModel;
+import com.microservice.order_service.model.OrderModel;
+import com.microservice.order_service.model.OrderStatus;
+import com.microservice.order_service.repository.OrderRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class OrderServiceIntegrationTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @MockBean
+    private ProductClient productClient;
+
+    @MockBean
+    private UserClient userClient;
+
+    @Test
+    void fullFlow_placeOrderAndGet() throws Exception {
+        // Mock clients
+        UserModel user = new UserModel(1L, "Test User", Role.CUSTOMER, List.of());
+        when(userClient.getUserById(1L)).thenReturn(user);
+
+        ProductModel product = new ProductModel(1L, "Test Product", "Desc", "Cat", 10.0, 5);
+        when(productClient.getProductById(1L)).thenReturn(product);
+        when(productClient.updateProduct(eq(1L), any(ProductModel.class))).thenReturn(product);
+
+        doNothing().when(userClient).addOrderToUser(eq(1L), any(Long.class));
+
+        // Place order
+        mockMvc.perform(post("/orders")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userId\":1, \"orderItems\":{\"1\":2}}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalPrice").value(20.0))
+                .andExpect(jsonPath("$.status").value("PLACED"));
+
+        // Assume order ID 1
+        Long orderId = 1L;
+
+        // Get order by ID
+        mockMvc.perform(get("/orders/" + orderId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(1))
+                .andExpect(jsonPath("$.totalPrice").value(20.0));
+
+        // Get orders by user ID
+        mockMvc.perform(get("/orders/user/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userId").value(1));
+
+        // Get all orders
+        mockMvc.perform(get("/orders"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userId").value(1));
+
+        // Clean up
+        orderRepository.deleteAll();
+    }
+
+    @Test
+    void getAllOrders_emptyInitially() throws Exception {
+        orderRepository.deleteAll();
+
+        mockMvc.perform(get("/orders"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("[]"));
+    }
+}

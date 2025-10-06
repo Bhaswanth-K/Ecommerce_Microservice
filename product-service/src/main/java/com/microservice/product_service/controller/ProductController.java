@@ -16,7 +16,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @Operation(summary = "Add a new product (Admin only)")
+    @Operation(summary = "Add a new product (Admin only)") 
     @PostMapping
     public ResponseEntity<ProductModel> addProduct(@RequestBody ProductModel product) {
         return ResponseEntity.ok(productService.addProduct(product));
@@ -48,19 +48,19 @@ public class ProductController {
     }
 
 
-    @Operation(summary = "Filter products by price range")
+    @Operation(summary = "Filter products by price range (Open to all)") 
     @GetMapping("/filter/price")
     public ResponseEntity<List<ProductModel>> getByPriceRange(@RequestParam("min") Double min, @RequestParam("max") Double max) {
         return ResponseEntity.ok(productService.getProductsByPriceRange(min, max));
     }
 
-    @Operation(summary = "Filter products by name")
+    @Operation(summary = "Filter products by name (Open to all)")
     @GetMapping("/filter/name")
     public ResponseEntity<List<ProductModel>> getByName(@RequestParam("name") String name) {
         return ResponseEntity.ok(productService.getProductsByName(name));
     }
 
-    @Operation(summary = "Filter products by category")
+    @Operation(summary = "Filter products by category (Open to all)")
     @GetMapping("/filter/category")
     public ResponseEntity<List<ProductModel>> getByCategory(@RequestParam("category") String category) {
         return ResponseEntity.ok(productService.getProductsByCategory(category));

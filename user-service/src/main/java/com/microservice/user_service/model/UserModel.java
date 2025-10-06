@@ -1,4 +1,4 @@
-package com.microservice.user_service.model;  // Adjust if needed
+package com.microservice.user_service.model; 
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class UserModel {
     @ElementCollection
     private List<Long> ordersList = new ArrayList<>();  // List of order IDs
 
-    // No-arg constructor (required for Jackson/JPA)
+    // No-arg constructor 
     public UserModel() {}
 
     // All-arg constructor
@@ -63,6 +63,3 @@ public class UserModel {
     }
 }
 
-enum Role {
-    CUSTOMER, ADMIN
-}

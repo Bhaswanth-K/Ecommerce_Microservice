@@ -16,25 +16,25 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @Operation(summary = "Place a new order")
+    @Operation(summary = "Place a new order") //customer or admin
     @PostMapping
     public ResponseEntity<OrderModel> placeOrder(@RequestBody OrderModel order) {
         return ResponseEntity.ok(orderService.placeOrder(order));
     }
 
-    @Operation(summary = "Get all orders")
+    @Operation(summary = "Get all orders") //admin
     @GetMapping
     public ResponseEntity<List<OrderModel>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
-    @Operation(summary = "Get order by ID")
+    @Operation(summary = "Get order by ID") //admin
     @GetMapping("/{id}")
     public ResponseEntity<OrderModel> getOrderById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
-    @Operation(summary = "Get orders by user ID")
+    @Operation(summary = "Get orders by user ID") //admin or customer
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<OrderModel>> getOrdersByUserId(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(orderService.getOrdersByUserId(userId));

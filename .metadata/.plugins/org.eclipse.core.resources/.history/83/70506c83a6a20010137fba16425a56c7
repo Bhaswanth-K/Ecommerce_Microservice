@@ -1,0 +1,14 @@
+package com.microservice.api_gateway.exception;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ApiGateWayFallback {
+
+    @GetMapping("/fallback")
+    public ResponseEntity<String> fallback() {
+       return ResponseEntity.status(503).body("Service Unavailable, Please try again later.");
+    }
+}

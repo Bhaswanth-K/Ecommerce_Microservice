@@ -23,7 +23,7 @@ public class OrderModel {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    // No-arg constructor (required for Jackson/JPA)
+    // No-arg constructor 
     public OrderModel() {}
 
     // All-arg constructor

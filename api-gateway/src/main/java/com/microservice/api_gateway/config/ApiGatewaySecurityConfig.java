@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
-@EnableWebFluxSecurity  // For reactive security
+@EnableWebFluxSecurity  
 public class ApiGatewaySecurityConfig {
 
     @Bean
@@ -30,6 +30,7 @@ public class ApiGatewaySecurityConfig {
                         
                         
                         .pathMatchers(HttpMethod.GET, "/products").permitAll()
+                        .pathMatchers(HttpMethod.GET,"/products/filter/**").permitAll()
                         .pathMatchers("/products").hasRole("ADMIN")  
                         .pathMatchers("/products/**").hasRole("ADMIN")  
                         

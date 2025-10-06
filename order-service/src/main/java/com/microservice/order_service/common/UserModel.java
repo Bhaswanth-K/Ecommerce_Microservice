@@ -1,19 +1,20 @@
 package com.microservice.order_service.common;
 
+//DTO
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserModel {  // No @Entity or JPA imports
+public class UserModel {  
     private Long id;
     private String name;
     private Role role;
     private List<Long> ordersList = new ArrayList<>();  // List of order IDs
 
-    // No-arg constructor (for Jackson deserialization)
+    // No-arg constructor
     public UserModel() {}
 
-    // All-arg constructor (optional, for convenience)
+    // All-arg constructor
     public UserModel(Long id, String name, Role role, List<Long> ordersList) {
         this.id = id;
         this.name = name;
@@ -53,8 +54,4 @@ public class UserModel {  // No @Entity or JPA imports
     public void setOrdersList(List<Long> ordersList) {
         this.ordersList = ordersList;
     }
-}
-
-enum Role {
-    CUSTOMER, ADMIN
 }

@@ -16,7 +16,7 @@ public class ProductModel {
     private Double price;
     private Integer quantity;
 
-    // No-arg constructor (required for Jackson deserialization)
+    // No-arg constructor
     public ProductModel() {}
 
     // All-arg constructor

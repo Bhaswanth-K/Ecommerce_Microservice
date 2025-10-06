@@ -1,11 +1,11 @@
 package com.microservice.order_service.service;
 
-import com.microservice.order_service.ProductClient;
-import com.microservice.order_service.UserClient;
+import com.microservice.order_service.client.ProductClient;
+import com.microservice.order_service.client.UserClient;
 import com.microservice.order_service.exception.OrderException;
 import com.microservice.order_service.model.OrderModel;
 import com.microservice.order_service.model.OrderStatus;
-import com.microservice.order_service.common.ProductModel;  // Imported from product-service (assume shared or DTO)
+import com.microservice.order_service.common.ProductModel;  
 import com.microservice.order_service.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +23,16 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     @Autowired
-    private ProductClient productClient;  // Feign client to product-service
+    private ProductClient productClient;  
 
     @Autowired
-    private UserClient userClient;  // Feign client to user-service
-
+    private UserClient userClient;  
+    
+    //adding a new order
     public OrderModel placeOrder(OrderModel order) {
         logger.info("Placing order for user: {}", order.getUserId());
 
-        // Validate user exists (call user-service)
+        
         try {
             userClient.getUserById(order.getUserId());
         } catch (Exception e) {
@@ -40,7 +41,7 @@ public class OrderService {
 
         double calculatedPrice = 0.0;
 
-        // Validate and update products
+        
         for (Map.Entry<Long, Integer> item : order.getOrderItems().entrySet()) {
             Long productId = item.getKey();
             Integer quantity = item.getValue();
@@ -53,7 +54,7 @@ public class OrderService {
                 throw new OrderException("Insufficient quantity for product: " + productId);
             }
 
-            // Update quantity in product-service
+            
             product.setQuantity(product.getQuantity() - quantity);
             productClient.updateProduct(productId, product);
 
@@ -64,22 +65,25 @@ public class OrderService {
         order.setStatus(OrderStatus.PLACED);
         OrderModel savedOrder = orderRepository.save(order);
 
-        // Add order to user's ordersList via user-service
+        
         userClient.addOrderToUser(order.getUserId(), savedOrder.getId());
 
         return savedOrder;
     }
-
+    
+    //fetching all orders
     public List<OrderModel> getAllOrders() {
         logger.info("Fetching all orders");
         return orderRepository.findAll();
     }
-
+    
+    //fetching orders by id
     public OrderModel getOrderById(Long id) {
         logger.info("Fetching order by id: {}", id);
         return orderRepository.findById(id).orElseThrow(() -> new OrderException("Order not found with id: " + id));
     }
-
+    
+    //fetching orders by user id
     public List<OrderModel> getOrdersByUserId(Long userId) {
         logger.info("Fetching orders for user: {}", userId);
         return orderRepository.findByUserId(userId);

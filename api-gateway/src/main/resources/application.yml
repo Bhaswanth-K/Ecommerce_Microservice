@@ -9,7 +9,7 @@ springdoc:
   swagger-ui:
     urls:
       - name: Product Microservice
-        url: http://localhost:8082/swagger-ui/index.html
+        url: http://localhost:8080/product-service/v3/api-docs
       - name: Order Microservice
         url: http://localhost:8080/order-service/v3/api-docs  
       - name: User Microservice

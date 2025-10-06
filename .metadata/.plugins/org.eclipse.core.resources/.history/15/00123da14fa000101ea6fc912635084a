@@ -1,0 +1,59 @@
+package com.microservice.api_gateway.controller;
+
+import com.microservice.api_gateway.config.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+public class AuthController {
+
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+
+    @PostMapping("/signup")
+    public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
+        // Check if username exists
+        if (userDetailsService.findByUsername(request.getUsername()).blockOptional().isPresent()) {
+            return ResponseEntity.badRequest().body("Username already exists");
+        }
+
+        // Add as CUSTOMER with plain password
+        userDetailsService.addUser(request.getUsername(), request.getPassword(), "CUSTOMER");
+        return ResponseEntity.ok("User signed up successfully");
+    }
+
+    @PutMapping("/users/{username}/make-admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> makeAdmin(@PathVariable String username) {
+        if (userDetailsService.findByUsername(username).blockOptional().isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        userDetailsService.updateUserRole(username, "ADMIN");
+        return ResponseEntity.ok("User updated to ADMIN");
+    }
+}
+
+// DTO for signup
+class SignupRequest {
+    private String username;
+    private String password;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}

@@ -16,7 +16,10 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    
 
+    // Add User
     public UserModel addUser(UserModel user) {
         logger.info("Adding user: {}", user.getName());
         if (user.getName() == null || user.getName().isEmpty()) {
@@ -24,16 +27,17 @@ public class UserService {
         }
         return userRepository.save(user);
     }
-
+    
+    // Update User
     public UserModel updateUser(Long id, UserModel updatedUser) {
         logger.info("Updating user with id: {}", id);
         UserModel existing = userRepository.findById(id).orElseThrow(() -> new UserException("User not found with id: " + id));
         existing.setName(updatedUser.getName());
         existing.setRole(updatedUser.getRole());
-        // Update ordersList if needed: existing.setOrdersList(updatedUser.getOrdersList());
         return userRepository.save(existing);
     }
-
+    
+    //Delete User
     public void deleteUser(Long id) {
         logger.info("Deleting user with id: {}", id);
         if (!userRepository.existsById(id)) {
@@ -41,18 +45,21 @@ public class UserService {
         }
         userRepository.deleteById(id);
     }
-
+    
+    //Get All Users
     public List<UserModel> getAllUsers() {
         logger.info("Fetching all users");
         return userRepository.findAll();
     }
-
+    
+    //Get User By Id
     public UserModel getUserById(Long id) {
         logger.info("Fetching user by id: {}", id);
         return userRepository.findById(id).orElseThrow(() -> new UserException("User not found with id: " + id));
     }
-
-    public void addOrderToUser(Long userId, Long orderId) {  // Ensure this method exists
+    
+    //For Adding the orders to user
+    public void addOrderToUser(Long userId, Long orderId) {  
         logger.info("Added order {} to user {}", orderId, userId);
         UserModel user = getUserById(userId);
         user.getOrdersList().add(orderId);

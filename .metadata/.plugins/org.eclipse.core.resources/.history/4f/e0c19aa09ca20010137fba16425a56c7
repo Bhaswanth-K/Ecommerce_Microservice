@@ -1,0 +1,115 @@
+package com.microservice.product_service;
+
+import com.microservice.product_service.controller.ProductController;
+import com.microservice.product_service.model.ProductModel;
+import com.microservice.product_service.service.ProductService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(ProductController.class)
+class ProductControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private ProductService productService;
+
+    @Test
+    void addProduct_success() throws Exception {
+        ProductModel product = new ProductModel(1L, "Test Product", "Desc", "Cat", 10.0, 5);
+        when(productService.addProduct(any(ProductModel.class))).thenReturn(product);
+
+        mockMvc.perform(post("/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Test Product\", \"description\":\"Desc\", \"category\":\"Cat\", \"price\":10.0, \"quantity\":5}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Test Product"));
+    }
+
+    @Test
+    void getAllProducts_success() throws Exception {
+        List<ProductModel> products = List.of(new ProductModel(1L, "Test Product", "Desc", "Cat", 10.0, 5));
+        when(productService.getAllProducts()).thenReturn(products);
+
+        mockMvc.perform(get("/products"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Test Product"));
+    }
+
+    @Test
+    void getProductById_success() throws Exception {
+        ProductModel product = new ProductModel(1L, "Test Product", "Desc", "Cat", 10.0, 5);
+        when(productService.getProductById(1L)).thenReturn(product);
+
+        mockMvc.perform(get("/products/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Test Product"));
+    }
+
+    @Test
+    void updateProduct_success() throws Exception {
+        ProductModel updated = new ProductModel(1L, "Updated Product", "New Desc", "New Cat", 20.0, 10);
+        when(productService.updateProduct(eq(1L), any(ProductModel.class))).thenReturn(updated);
+
+        mockMvc.perform(put("/products/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Updated Product\", \"description\":\"New Desc\", \"category\":\"New Cat\", \"price\":20.0, \"quantity\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated Product"));
+    }
+
+    @Test
+    void deleteProduct_success() throws Exception {
+        doNothing().when(productService).deleteProduct(1L);
+
+        mockMvc.perform(delete("/products/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Product deleted successfully with id: 1"));
+    }
+
+    @Test
+    void getByPriceRange_success() throws Exception {
+        List<ProductModel> products = List.of(new ProductModel(1L, "Test Product", "Desc", "Cat", 10.0, 5));
+        when(productService.getProductsByPriceRange(5.0, 15.0)).thenReturn(products);
+
+        mockMvc.perform(get("/products/filter/price")
+                .param("min", "5.0")
+                .param("max", "15.0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Test Product"));
+    }
+
+    @Test
+    void getByName_success() throws Exception {
+        List<ProductModel> products = List.of(new ProductModel(1L, "Test Product", "Desc", "Cat", 10.0, 5));
+        when(productService.getProductsByName("Test")).thenReturn(products);
+
+        mockMvc.perform(get("/products/filter/name")
+                .param("name", "Test"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Test Product"));
+    }
+
+    @Test
+    void getByCategory_success() throws Exception {
+        List<ProductModel> products = List.of(new ProductModel(1L, "Test Product", "Desc", "Cat", 10.0, 5));
+        when(productService.getProductsByCategory("Cat")).thenReturn(products);
+
+        mockMvc.perform(get("/products/filter/category")
+                .param("category", "Cat"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Test Product"));
+    }
+}

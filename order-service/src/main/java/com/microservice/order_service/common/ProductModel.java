@@ -1,6 +1,8 @@
 package com.microservice.order_service.common;
 
-public class ProductModel {  // No @Entity or JPA imports
+//DTO
+
+public class ProductModel { 
     private Long id;
     private String name;
     private String description;
@@ -8,10 +10,10 @@ public class ProductModel {  // No @Entity or JPA imports
     private Double price;
     private Integer quantity;
 
-    // No-arg constructor (for Jackson deserialization)
+    // No-arg constructor 
     public ProductModel() {}
 
-    // All-arg constructor (optional, for convenience)
+    // All-arg constructor 
     public ProductModel(Long id, String name, String description, String category, Double price, Integer quantity) {
         this.id = id;
         this.name = name;

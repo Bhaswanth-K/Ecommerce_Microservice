@@ -42,13 +42,13 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @Operation(summary = "Get user by ID (includes orders list)")
+    @Operation(summary = "Get user by ID") //It includes orders list to show the orders of the user placed successfully
     @GetMapping("/{id}")
     public ResponseEntity<UserModel> getUserById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @Operation(summary = "Add order to user (internal use)")  // NEW: Added endpoint for order-service
+    @Operation(summary = "Add order to user") //For internal use by feign client
     @PostMapping("/{userId}/orders")
     public void addOrderToUser(@PathVariable("userId") Long userId, @RequestParam("orderId") Long orderId) {
         userService.addOrderToUser(userId, orderId);

@@ -1,0 +1,99 @@
+package com.microservice.user_service;
+
+import com.microservice.user_service.controller.UserController;
+import com.microservice.user_service.model.UserModel;
+import com.microservice.user_service.service.UserService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.microservice.user_service.model.Role.CUSTOMER;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(UserController.class)
+class UserControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private UserService userService;
+
+    @Test
+    //add users
+    void addUser_success() throws Exception {
+        UserModel user = new UserModel(1L, "Test User", CUSTOMER, new ArrayList<>());
+        when(userService.addUser(any(UserModel.class))).thenReturn(user);
+
+        mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Test User\", \"role\":\"CUSTOMER\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Test User"));
+    }
+
+    @Test
+    //update users
+    void updateUser_success() throws Exception {
+        UserModel updated = new UserModel(1L, "Updated User", CUSTOMER, new ArrayList<>());
+        when(userService.updateUser(eq(1L), any(UserModel.class))).thenReturn(updated);
+
+        mockMvc.perform(put("/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Updated User\", \"role\":\"CUSTOMER\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated User"));
+    }
+
+    @Test
+    //Delete Users
+    void deleteUser_success() throws Exception {
+        doNothing().when(userService).deleteUser(1L);
+
+        mockMvc.perform(delete("/users/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("User deleted successfully with id: 1"));
+    }
+
+    @Test
+    //Get all users
+    void getAllUsers_success() throws Exception {
+        List<UserModel> users = List.of(new UserModel(1L, "Test User", CUSTOMER, new ArrayList<>()));
+        when(userService.getAllUsers()).thenReturn(users);
+
+        mockMvc.perform(get("/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Test User"));
+    }
+
+    @Test
+    //Get user by ID
+    void getUserById_success() throws Exception {
+        UserModel user = new UserModel(1L, "Test User", CUSTOMER, new ArrayList<>());
+        when(userService.getUserById(1L)).thenReturn(user);
+
+        mockMvc.perform(get("/users/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Test User"));
+    }
+
+    @Test
+    // Adding Order to the user
+    void addOrderToUser_success() throws Exception {
+        doNothing().when(userService).addOrderToUser(1L, 100L);
+
+        mockMvc.perform(post("/users/1/orders")
+                .param("orderId", "100"))
+                .andExpect(status().isOk());
+    }
+}

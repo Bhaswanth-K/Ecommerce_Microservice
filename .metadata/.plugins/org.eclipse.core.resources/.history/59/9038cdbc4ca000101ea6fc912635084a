@@ -1,0 +1,5 @@
+package com.microservice.api_gateway.controller;
+
+public class AuthController {
+
+}

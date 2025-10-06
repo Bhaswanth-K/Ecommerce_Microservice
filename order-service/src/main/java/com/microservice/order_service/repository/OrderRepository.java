@@ -8,5 +8,7 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<OrderModel, Long> {
+	
+	//query to find the user by id
     List<OrderModel> findByUserId(Long userId);
 }

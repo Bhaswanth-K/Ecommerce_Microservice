@@ -1,5 +1,0 @@
-package com.microservice.user_service.repository;
-
-public class UserRepository {
-
-}

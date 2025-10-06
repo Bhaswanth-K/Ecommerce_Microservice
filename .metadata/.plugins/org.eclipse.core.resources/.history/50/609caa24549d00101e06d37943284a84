@@ -1,5 +1,0 @@
-package com.microservice.api_gateway.config;
-
-public class ApiGatewaySecurityConfig {
-
-}

@@ -1,5 +1,0 @@
-package com.microservice.api_gateway.model;
-
-public class GatewayUser {
-
-}
